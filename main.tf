@@ -92,7 +92,7 @@ output "result" {
       port = kubernetes_service.spec.port[0].port
       database = postgresql_database.name
       username = "postgres"
-      password = kubernetes_service.metadata.password
+      password = var.password
     }
     // UCP resource IDs
     resources = [
