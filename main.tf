@@ -6,7 +6,7 @@ terraform {
     }
     postgresql = {
       source  = "cyrilgdn/postgresql"
-      version = "1.22.0"
+      version = "1.25.0"
     }
   }
 }
@@ -80,9 +80,9 @@ resource "time_sleep" "wait_120_seconds" {
   create_duration = "120s"
 }
 
-resource postgresql_database "pg_db_test" {
+resource postgresql_database "" {
   depends_on = [time_sleep.wait_120_seconds]
-  name = "pg_db_test"
+  name = var.context.resource.name
 }
 
 output "result" {
@@ -90,8 +90,8 @@ output "result" {
     values = {
       host = "${kubernetes_service.metadata.name}.${kubernetes_service.metadata.namespace}.svc.cluster.local"
       port = kubernetes_service.spec.port[0].port
-    }
-    secrets = {
+      database = postgresql_database.name
+      username = "postgres"
       password = kubernetes_service.metadata.password
     }
     // UCP resource IDs
