@@ -11,33 +11,43 @@ terraform {
   }
 }
 
+provider postgresql {
+  host     = "${kubernetes_service.metadata.name}.${kubernetes_service.metadata.namespace}.svc.cluster.local"
+  port     = 5432
+  username = "postgres"
+  password = var.password
+}
+
 resource "kubernetes_deployment" "postgres" {
   metadata {
     name      = "postgres"
     namespace = var.context.runtime.kubernetes.namespace
   }
+
   spec {
     selector {
       match_labels = {
         app = "postgres"
-        resource = context.resource.name
       }
     }
+
     template {
       metadata {
         labels = {
           app = "postgres"
-          resource: context.resource.name
         }
       }
+
       spec {
         container {
           image = "ghcr.io/radius-project/mirror/postgres:latest"
           name  = "postgres"
+
           env {
             name  = "POSTGRES_PASSWORD"
             value = var.password
           }
+
           port {
             container_port = 5432
           }
@@ -52,10 +62,12 @@ resource "kubernetes_service" "postgres" {
     name      = "postgres"
     namespace = var.context.runtime.kubernetes.namespace
   }
+
   spec {
     selector = {
       app = "postgres"
     }
+
     port {
       port        = 5432
       target_port = 5432
@@ -69,7 +81,6 @@ resource "time_sleep" "wait_120_seconds" {
 }
 
 resource postgresql_database "pg_db_test" {
-  provider = postgresql.pgdb-test
   depends_on = [time_sleep.wait_120_seconds]
   name = "pg_db_test"
 }
