@@ -11,8 +11,14 @@ terraform {
   }
 }
 
+variable "namespace" {
+  description = "This variable contains Radius recipe context."
+  type        = string
+  default = var.context.runtime.kubernetes.namespace
+}
+
 provider postgresql {
-  host     = "${kubernetes_service.metadata.name}.${kubernetes_service.metadata.namespace}.svc.cluster.local"
+  host     = "${kubernetes.service.name}.${namespace}.svc.cluster.local"
   port     = 5432
   username = "postgres"
   password = var.password
