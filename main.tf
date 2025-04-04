@@ -89,9 +89,9 @@ resource postgresql_database "postgres" {
 output "result" {
   value = {
     values = {
-      host = "${kubernetes_service.metadata.name}.${kubernetes_service.metadata.namespace}.svc.cluster.local"
-      port = kubernetes_service.spec.port[0].port
-      database = postgresql_database.name
+      host = "postgres.default-todoapp.svc.cluster.local"
+      port = "5432"
+      database = var.context.resource.name
       username = "postgres"
       password = var.password
     }
