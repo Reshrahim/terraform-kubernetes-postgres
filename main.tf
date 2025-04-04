@@ -82,7 +82,7 @@ resource "time_sleep" "wait_120_seconds" {
   create_duration = "120s"
 }
 
-resource postgresql_database "postgres" {
+resource postgresql_database "postgres1" {
   depends_on = [time_sleep.wait_120_seconds]
   name = var.context.resource.name
 }
