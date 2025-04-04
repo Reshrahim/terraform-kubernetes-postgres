@@ -17,7 +17,7 @@ provider postgresql {
   port     = 5432
   username = "postgres"
   password = var.password
-  sslmode  = "require"
+  sslmode  = "disable"
 }
 
 resource "kubernetes_deployment" "postgres" {
