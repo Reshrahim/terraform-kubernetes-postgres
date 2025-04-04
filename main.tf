@@ -22,7 +22,7 @@ provider postgresql {
 
 resource "kubernetes_deployment" "postgres" {
   metadata {
-    name      = "postgres"
+    name      = var.context.resource.name
     namespace = var.context.runtime.kubernetes.namespace
   }
 
@@ -61,7 +61,7 @@ resource "kubernetes_deployment" "postgres" {
 
 resource "kubernetes_service" "postgres" {
   metadata {
-    name      = "postgres"
+    name      = var.context.resource.name
     namespace = var.context.runtime.kubernetes.namespace
   }
 
