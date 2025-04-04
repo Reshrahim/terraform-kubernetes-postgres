@@ -8,3 +8,9 @@ variable "password" {
   type        = string
   default     = "password"
 }
+
+variable "namespace" {
+  description = "This variable contains Radius recipe context."
+  type        = string
+  default = var.context.runtime.kubernetes.namespace
+}
