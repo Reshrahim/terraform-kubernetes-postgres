@@ -11,15 +11,6 @@ terraform {
   }
 }
 
-
-provider postgresql {
-  host     = "postgres.default-todoapp.svc.cluster.local"
-  port     = 5432
-  username = "postgres"
-  password = var.password
-  sslmode  = "disable"
-}
-
 resource "kubernetes_deployment" "postgres" {
   metadata {
     name      = var.context.resource.name
