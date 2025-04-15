@@ -11,6 +11,14 @@ terraform {
   }
 }
 
+provider "postgresql" {
+  host     = "postgres-${random_id.suffix.hex}.${var.context.runtime.kubernetes.namespace}.svc.cluster.local"
+  port     = 5433
+  username = "postgres"
+  password = var.password
+  database = "postgres"
+}
+
 resource "kubernetes_deployment" "postgres" {
   metadata {
     name      = "postgres-${random_id.suffix.hex}"
