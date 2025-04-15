@@ -13,7 +13,7 @@ terraform {
 
 resource "kubernetes_deployment" "postgres" {
   metadata {
-    name      = "postgres-${var.context.resource.id}"
+    name      = "postgres-${lower(var.context.resource.id)}"
     namespace = var.context.runtime.kubernetes.namespace
 
   }
@@ -55,7 +55,7 @@ resource "kubernetes_deployment" "postgres" {
 
 resource "kubernetes_service" "postgres" {
   metadata {
-    name      = "postgres-${var.context.resource.id}"
+    name      = "postgres-${lower(var.context.resource.id)}"
     namespace = var.context.runtime.kubernetes.namespace
   }
 
