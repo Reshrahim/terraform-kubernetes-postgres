@@ -81,7 +81,7 @@ resource postgresql_database "postgres" {
 output "result" {
   value = {
     values = {
-      host = "${kubernetes_service.metadata[0].name}.${kubernetes_service.metadata[0].namespace}.svc.cluster.local"
+      host = "${kubernetes_service.postgres.metadata.name}.${kubernetes_service.postgres.metadata.namespace}.svc.cluster.local"
       port = "5432"
       database = var.context.resource.name
       username = "postgres"
