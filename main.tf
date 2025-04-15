@@ -13,7 +13,7 @@ terraform {
 
 resource "kubernetes_deployment" "postgres" {
   metadata {
-    name      = "postgres-${lower(var.context.resource.id)}"
+    name      = "postgres-${random_id.suffix.hex}"
     namespace = var.context.runtime.kubernetes.namespace
 
   }
@@ -53,9 +53,13 @@ resource "kubernetes_deployment" "postgres" {
   }
 }
 
+resource "random_id" "suffix" {
+  byte_length = 4
+}
+
 resource "kubernetes_service" "postgres" {
   metadata {
-    name      = "postgres-${lower(var.context.resource.id)}"
+    name      = "postgres-${random_id.suffix.hex}"
     namespace = var.context.runtime.kubernetes.namespace
   }
 
