@@ -12,7 +12,7 @@ terraform {
 }
 
 provider "postgresql"{
-  host     = "${kubernetes_service.postgres.metadata.name}.${kubernetes_service.postgres.metadata.namespace}.svc.cluster.local"
+  host     = "${var.context.resource.name}.${var.context.runtime.kubernetes.namespace}.svc.cluster.local"
   port     = 5432
   username = "postgres"
   password = var.password
