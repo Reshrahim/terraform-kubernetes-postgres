@@ -11,6 +11,13 @@ terraform {
   }
 }
 
+provider "postgresql"{
+  host     = "${kubernetes_service.postgres.metadata.name}.${kubernetes_service.postgres.metadata.namespace}.svc.cluster.local"
+  port     = 5432
+  username = "postgres"
+  password = var.password
+}
+
 resource "kubernetes_deployment" "postgres" {
   metadata {
     name      = var.context.resource.name
@@ -73,7 +80,7 @@ resource "time_sleep" "wait_120_seconds" {
   create_duration = "120s"
 }
 
-resource postgresql_database "postgres1" {
+resource postgresql_database "postgres" {
   depends_on = [time_sleep.wait_120_seconds]
   name = var.context.resource.name
 }
@@ -81,7 +88,7 @@ resource postgresql_database "postgres1" {
 output "result" {
   value = {
     values = {
-      host = "postgres.default-todoapp.svc.cluster.local"
+      host = "${kubernetes_service.metadata.name}.${kubernetes_service.metadata.namespace}.svc.cluster.local"
       port = "5432"
       database = var.context.resource.name
       username = "postgres"
