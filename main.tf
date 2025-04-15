@@ -85,8 +85,6 @@ resource "time_sleep" "wait_120_seconds" {
 resource postgresql_database "postgres" {
   depends_on = [time_sleep.wait_120_seconds]
   name = var.context.resource.name
-  host ="${kubernetes_service.postgres.metadata[0].name}.${kubernetes_service.postgres.metadata[0].namespace}.svc.cluster.local"
-  port = "5433"
 }
 
 output "result" {
