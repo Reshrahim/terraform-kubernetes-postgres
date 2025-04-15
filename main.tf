@@ -45,7 +45,7 @@ resource "kubernetes_deployment" "postgres" {
           }
 
           port {
-            container_port = 5432
+            container_port = 5433
           }
         }
       }
@@ -71,8 +71,8 @@ resource "kubernetes_service" "postgres" {
     }
 
     port {
-      port        = 5432
-      target_port = 5432
+      port        = 5433
+      target_port = 5433
     }
   }
 }
@@ -91,7 +91,7 @@ output "result" {
   value = {
     values = {
       host = "${kubernetes_service.postgres.metadata[0].name}.${kubernetes_service.postgres.metadata[0].namespace}.svc.cluster.local"
-      port = "5432"
+      port = "5433"
       database = var.context.resource.name
       username = "postgres"
       password = var.password
