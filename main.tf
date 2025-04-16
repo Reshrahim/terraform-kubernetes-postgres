@@ -6,7 +6,7 @@ terraform {
     }
     postgresql = {
       source  = "cyrilgdn/postgresql"
-      version = "1.25.0"
+      version = "1.22.0"
     }
   }
 }
@@ -16,22 +16,19 @@ provider "postgresql" {
   port     = 5432
   username = "postgres"
   password = "password"
-  database = "postgres"
   sslmode = "disable"
 }
 
 resource "kubernetes_deployment" "postgres" {
   metadata {
     name      = "postgres"
-    namespace = "reabdul"
-
+    namespace = var.context.runtime.kubernetes.namespace
   }
 
   spec {
     selector {
       match_labels = {
         app = "postgres"
-        resource = "postgres"
       }
     }
 
@@ -39,7 +36,6 @@ resource "kubernetes_deployment" "postgres" {
       metadata {
         labels = {
           app = "postgres"
-          resource = "postgres"
         }
       }
 
@@ -50,7 +46,7 @@ resource "kubernetes_deployment" "postgres" {
 
           env {
             name  = "POSTGRES_PASSWORD"
-            value = "password"
+            value = var.password
           }
 
           port {
@@ -65,13 +61,12 @@ resource "kubernetes_deployment" "postgres" {
 resource "kubernetes_service" "postgres" {
   metadata {
     name      = "postgres"
-    namespace = "reabdul"
+    namespace = var.context.runtime.kubernetes.namespace
   }
 
   spec {
     selector = {
       app = "postgres"
-      resource = "postgres"
     }
 
     port {
@@ -86,19 +81,8 @@ resource "time_sleep" "wait_120_seconds" {
   create_duration = "120s"
 }
 
-resource postgresql_database "postgres" {
+resource postgresql_database "pg_db_test" {
+  provider = postgresql
   depends_on = [time_sleep.wait_120_seconds]
-  name = "postgres"
-}
-
-output "result" {
-  value = {
-    values = {
-      host = "${kubernetes_service.postgres.metadata[0].name}.${kubernetes_service.postgres.metadata[0].namespace}.svc.cluster.local"
-      port = "5432"
-      database = "postgres"
-      username = "postgres"
-      password = var.password
-    }
-  }
+  name = "pg_db_test"
 }
