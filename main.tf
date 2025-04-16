@@ -12,7 +12,7 @@ terraform {
 }
 
 provider "postgresql" {
-  host     = "localhost"
+  host     = "postgres.reabdul.svc.cluster.local"
   port     = 5432
   username = "postgres"
   password = "password"
@@ -85,4 +85,16 @@ resource postgresql_database "pg_db_test" {
   provider = postgresql
   depends_on = [time_sleep.wait_180_seconds]
   name = "pg_db_test"
+}
+
+output "result" {
+  value = {
+    values = {
+      host = "postgres.reabdul.svc.cluster.local"
+      port = "5432"
+      database = "pg_db_test"
+      username = "postgres"
+      password = "password"
+    }
+  }
 }
