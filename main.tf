@@ -12,7 +12,7 @@ terraform {
 }
 
 provider "postgresql" {
-  host     = "localhost.default-todolist.svc.cluster.local"
+  host     = "postgres.reabdul.svc.cluster.local"
   port     = 5433
   username = "postgres"
   password = var.password
