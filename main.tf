@@ -11,14 +11,6 @@ terraform {
   }
 }
 
-provider "postgresql" {
-  host     = "postgres-${random_id.suffix.hex}.${var.context.runtime.kubernetes.namespace}.svc.cluster.local"
-  port     = 5433
-  username = "postgres"
-  password = var.password
-  database = "postgres"
-}
-
 resource "kubernetes_deployment" "postgres" {
   metadata {
     name      = "postgres-${random_id.suffix.hex}"
@@ -87,11 +79,11 @@ resource "kubernetes_service" "postgres" {
 
 resource "time_sleep" "wait_120_seconds" {
   depends_on = [kubernetes_service.postgres]
-  create_duration = "120s"
+  create_duration = "180s"
 }
 
 resource postgresql_database "postgres" {
-  depends_on = [time_sleep.wait_120_seconds]
+  depends_on = [time_sleep.wait_180_seconds]
   name = var.context.resource.name
 }
 
