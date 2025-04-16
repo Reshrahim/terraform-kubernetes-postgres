@@ -15,14 +15,15 @@ provider "postgresql" {
   host     = "postgres.reabdul.svc.cluster.local"
   port     = 5432
   username = "postgres"
-  password = var.password
+  password = "password"
   database = "postgres"
+  sslmode = "disable"
 }
 
 resource "kubernetes_deployment" "postgres" {
   metadata {
     name      = "postgres"
-    namespace = var.context.runtime.kubernetes.namespace
+    namespace = "reabdul"
 
   }
 
@@ -30,7 +31,7 @@ resource "kubernetes_deployment" "postgres" {
     selector {
       match_labels = {
         app = "postgres"
-        resource = var.context.resource.name
+        resource = "postgres"
       }
     }
 
@@ -38,7 +39,7 @@ resource "kubernetes_deployment" "postgres" {
       metadata {
         labels = {
           app = "postgres"
-          resource = var.context.resource.name
+          resource = "postgres"
         }
       }
 
@@ -49,7 +50,7 @@ resource "kubernetes_deployment" "postgres" {
 
           env {
             name  = "POSTGRES_PASSWORD"
-            value = var.password
+            value = "password"
           }
 
           port {
@@ -61,21 +62,16 @@ resource "kubernetes_deployment" "postgres" {
   }
 }
 
-resource "random_id" "suffix" {
-  byte_length = 4
-}
-
 resource "kubernetes_service" "postgres" {
   metadata {
     name      = "postgres"
-    namespace = var.context.runtime.kubernetes.namespace
+    namespace = "reabdul"
   }
 
   spec {
-    type = "ClusterIP"
     selector = {
       app = "postgres"
-      resource = var.context.resource.name
+      resource = "postgres"
     }
 
     port {
@@ -92,7 +88,7 @@ resource "time_sleep" "wait_120_seconds" {
 
 resource postgresql_database "postgres" {
   depends_on = [time_sleep.wait_120_seconds]
-  name = var.context.resource.name
+  name = "postgres"
 }
 
 output "result" {
@@ -100,7 +96,7 @@ output "result" {
     values = {
       host = "${kubernetes_service.postgres.metadata[0].name}.${kubernetes_service.postgres.metadata[0].namespace}.svc.cluster.local"
       port = "5432"
-      database = var.context.resource.name
+      database = "postgres"
       username = "postgres"
       password = var.password
     }
