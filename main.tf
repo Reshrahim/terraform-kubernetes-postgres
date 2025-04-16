@@ -13,7 +13,7 @@ terraform {
 
 provider "postgresql" {
   host     = "postgres.reabdul.svc.cluster.local"
-  port     = 5433
+  port     = 5432
   username = "postgres"
   password = var.password
   database = "postgres"
