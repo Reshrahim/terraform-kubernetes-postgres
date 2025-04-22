@@ -12,11 +12,22 @@ terraform {
 }
 
 provider "postgresql" {
-  host     = "postgres.reabdul.svc.cluster.local"
+  host     = "${kubernetes_service.postgres.metadata[0].name}.${kubernetes_service.postgres.metadata[0].namespace}.svc.cluster.local"
   port     = 5432
   username = "postgres"
-  password = "password"
+  password = random_password.password.result
   sslmode = "disable"
+}
+
+variable "context" {
+  description = "This variable contains Radius recipe context."
+  type = any
+}
+
+resource "random_password" "password" {
+  length           = 16
+  special          = true
+  override_special = "!#$%&*()-_=+[]{}<>:?"
 }
 
 resource "kubernetes_deployment" "postgres" {
@@ -46,7 +57,7 @@ resource "kubernetes_deployment" "postgres" {
 
           env {
             name  = "POSTGRES_PASSWORD"
-            value = var.password
+            value = random_password.password.result
           }
 
           port {
@@ -81,20 +92,20 @@ resource "time_sleep" "wait_180_seconds" {
   create_duration = "180s"
 }
 
-resource postgresql_database "pg_db_test" {
+resource postgresql_database "postgres_db_test" {
   provider = postgresql
   depends_on = [time_sleep.wait_180_seconds]
-  name = "pg_db_test"
+  name = "postgres_db_test"
 }
 
 output "result" {
   value = {
     values = {
-      host = "postgres.reabdul.svc.cluster.local"
+      host = "${kubernetes_service.postgres.metadata[0].name}.${kubernetes_service.postgres.metadata[0].namespace}.svc.cluster.local"
       port = "5432"
-      database = "pg_db_test"
+      database = "postgres_db_test"
       username = "postgres"
-      password = "password"
+      password = "${random_password.password.result}"
     }
   }
 }
