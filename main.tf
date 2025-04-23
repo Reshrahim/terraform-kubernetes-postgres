@@ -14,13 +14,11 @@ variable "context" {
 
 resource "random_password" "password" {
   length           = 16
-  special          = true
-  override_special = "!#$%&*()-_=+[]{}<>:?"
 }
 
-resource "kubernetes_deployment" "postgres" {
+resource "kubernetes_deployment" "postgresql" {
   metadata {
-    name      = "postgres"
+    name      = "var.context.resource.name"
     namespace = var.context.runtime.kubernetes.namespace
   }
 
@@ -44,7 +42,7 @@ resource "kubernetes_deployment" "postgres" {
           name  = "postgres"
           env {
             name  = "POSTGRES_PASSWORD"
-            value = "password"
+            value = random_password.password.result
           }
           env {
             name = "POSTGRES_USER"
@@ -65,7 +63,7 @@ resource "kubernetes_deployment" "postgres" {
 
 resource "kubernetes_service" "postgres" {
   metadata {
-    name      = "postgres"
+    name      = var.context.resource.name
     namespace = var.context.runtime.kubernetes.namespace
   }
 
@@ -87,8 +85,8 @@ output "result" {
       host = "${kubernetes_service.postgres.metadata[0].name}.${kubernetes_service.postgres.metadata[0].namespace}.svc.cluster.local"
       port = "5432"
       database = "postgres_db_test"
-      username = "postgres"
-      password = "password"
+      username = var.context.resource.name
+      password = random_password.password.result
     }
   }
 }
