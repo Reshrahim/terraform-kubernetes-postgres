@@ -4,19 +4,7 @@ terraform {
       source  = "hashicorp/kubernetes"
       version = ">= 2.0"
     }
-    postgresql = {
-      source  = "cyrilgdn/postgresql"
-      version = "1.22.0"
-    }
   }
-}
-
-provider "postgresql" {
-  host     = "${kubernetes_service.postgres.metadata[0].name}.${kubernetes_service.postgres.metadata[0].namespace}.svc.cluster.local"
-  port     = 5432
-  username = "postgres"
-  password = random_password.password.result
-  sslmode = "disable"
 }
 
 variable "context" {
@@ -54,12 +42,18 @@ resource "kubernetes_deployment" "postgres" {
         container {
           image = "ghcr.io/radius-project/mirror/postgres:latest"
           name  = "postgres"
-
           env {
             name  = "POSTGRES_PASSWORD"
             value = random_password.password.result
           }
-
+          env {
+            name = "POSTGRES_USER"
+            value = "postgres"
+          }
+          env {
+            name  = "POSTGRES_DATABASE"
+            value = "postgres_db_test"
+          }
           port {
             container_port = 5432
           }
@@ -85,17 +79,6 @@ resource "kubernetes_service" "postgres" {
       target_port = 5432
     }
   }
-}
-
-resource "time_sleep" "wait_180_seconds" {
-  depends_on = [kubernetes_service.postgres]
-  create_duration = "180s"
-}
-
-resource postgresql_database "postgres_db_test" {
-  provider = postgresql
-  depends_on = [time_sleep.wait_180_seconds]
-  name = "postgres_db_test"
 }
 
 output "result" {
