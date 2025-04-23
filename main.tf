@@ -18,7 +18,7 @@ resource "random_password" "password" {
 
 resource "kubernetes_deployment" "postgresql" {
   metadata {
-    name      = "var.context.resource.name"
+    name      = var.context.resource.name
     namespace = var.context.runtime.kubernetes.namespace
   }
 
