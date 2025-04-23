@@ -40,11 +40,11 @@ resource "kubernetes_deployment" "postgres" {
 
       spec {
         container {
-          image = "ghcr.io/radius-project/mirror/postgres:latest"
+          image = "postgres:16-alpine"
           name  = "postgres"
           env {
             name  = "POSTGRES_PASSWORD"
-            value = random_password.password.result
+            value = "password"
           }
           env {
             name = "POSTGRES_USER"
