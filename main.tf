@@ -88,7 +88,7 @@ output "result" {
       port = "5432"
       database = "postgres_db_test"
       username = "postgres"
-      password = "${random_password.password.result}"
+      password = "password"
     }
   }
 }
