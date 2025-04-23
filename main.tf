@@ -51,7 +51,7 @@ resource "kubernetes_deployment" "postgres" {
             value = "postgres"
           }
           env {
-            name  = "POSTGRES_DATABASE"
+            name  = "POSTGRES_DB"
             value = "postgres_db_test"
           }
           port {
