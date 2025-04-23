@@ -12,14 +12,20 @@ variable "context" {
   type = any
 }
 
+locals {
+  uniqueName = var.context.resource.name
+  port     = 5432
+  namespace = var.context.runtime.kubernetes.namespace
+}
+
 resource "random_password" "password" {
   length           = 16
 }
 
 resource "kubernetes_deployment" "postgresql" {
   metadata {
-    name      = var.context.resource.name
-    namespace = var.context.runtime.kubernetes.namespace
+    name      = local.uniqueName
+    namespace = local.namespace
   }
 
   spec {
@@ -50,10 +56,10 @@ resource "kubernetes_deployment" "postgresql" {
           }
           env {
             name  = "POSTGRES_DB"
-            value = "postgres_db_test"
+            value = "postgres_db"
           }
           port {
-            container_port = 5432
+            container_port = local.port
           }
         }
       }
@@ -63,8 +69,8 @@ resource "kubernetes_deployment" "postgresql" {
 
 resource "kubernetes_service" "postgres" {
   metadata {
-    name      = var.context.resource.name
-    namespace = var.context.runtime.kubernetes.namespace
+    name      = local.uniqueName
+    namespace = local.namespace
   }
 
   spec {
@@ -73,9 +79,9 @@ resource "kubernetes_service" "postgres" {
     }
 
     port {
-      port        = 5432
-      target_port = 5432
-    }
+      port        = local.port
+      target_port = local.port
+    } 
   }
 }
 
@@ -83,9 +89,9 @@ output "result" {
   value = {
     values = {
       host = "${kubernetes_service.postgres.metadata[0].name}.${kubernetes_service.postgres.metadata[0].namespace}.svc.cluster.local"
-      port = "5432"
-      database = "postgres_db_test"
-      username = var.context.resource.name
+      port = local.port
+      database = "postgres_db"
+      username = "postgres"
       password = random_password.password.result
     }
   }
